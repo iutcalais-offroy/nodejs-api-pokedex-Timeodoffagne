@@ -39,6 +39,7 @@ model Card {
   Deck          DeckCard[]
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
+  decks         DeckCard[] 
 }
 
 model User {
@@ -49,22 +50,28 @@ model User {
   decks     Deck[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  decks     Deck[]   @relation("UserDecks") 
 }
 
 model Deck {
-  id        Int        @id @default(autoincrement())
-  name      String     @unique
+  id        Int      @id @default(autoincrement())
+  name      String
   userId    Int
-  card      DeckCard[]
-  user      User       @relation(fields: [userId], references: [id])
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  user      User     @relation("UserDecks", fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  cards     DeckCard[]
 }
 
 model DeckCard {
-  id      Int  @id @default(autoincrement())
+  id      Int @id @default(autoincrement())
   deckId  Int
   cardId  Int
-  deck    Deck @relation(fields: [deckId], references: [id])
-  card    Card @relation(fields: [cardId], references: [id])
+  deck    Deck @relation(fields: [deckId], references: [id], onDelete: Cascade)
+  card    Card @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  @@unique([deckId, cardId])
 }
+
+
